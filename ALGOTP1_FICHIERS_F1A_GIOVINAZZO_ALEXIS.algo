@@ -1,0 +1,256 @@
+ALGORITHME : TP_Fichiers_Verbes
+BUT : Créez un fichier (en programmation) contenant des verbes
+Créer une fonctionnalité afficher_fichier qui comme son nom l’indique affichera vos fichiers.
+Créer une fonctionnalité groupe_verbe qui permet de reconnaître le groupe de chaque verbe.
+Créer une fonctionnalité qui permet de conjuguer votre verbe au présent de l’indicatif.
+Les verbes conjugués seront stockés proprement (attention à la présentation svp) dans un fichier conjugaison.
+ENTREES : Verbes
+SORTIES : Fichiers de verbes, groupe des verbes, conjugaison des verbes.
+
+CONST 
+	RetourAlaLigne=10 
+
+PROCEDURE CreationFichier(VAR f:texte) //Créer le fichier de base avec les verbes voulus
+
+DEBUT
+
+	SI NON FichierExiste (f) ALORS //Fonction vérifiant si le fichier f n'existe pas
+		DEBUT
+			REECRIRE(f)
+			ECRIRE(f,"rire"& Chr(RetourAlaLigne)) //Pour faire un retour à la ligne dans le fichier
+			ECRIRE(f,"recevoir"& Chr(RetourAlaLigne))
+			ECRIRE(f,"aller"& Chr(RetourAlaLigne))
+			ECRIRE(f,"bouillir"& Chr(RetourAlaLigne))
+			ECRIRE(f,"envoyer"& Chr(RetourAlaLigne))
+			ECRIRE(f,"peindre"& Chr(RetourAlaLigne))
+			ECRIRE(f,"habiter"& Chr(RetourAlaLigne))
+			ECRIRE(f,"payer"& Chr(RetourAlaLigne))
+			ECRIRE(f,"mourir"& Chr(RetourAlaLigne))
+			ECRIRE(f,"hair"& Chr(RetourAlaLigne))
+			ECRIRE(f,"vouloir"& Chr(RetourAlaLigne))
+			ECRIRE(f,"finir"& Chr(RetourAlaLigne))
+			ECRIRE(f,"s'amuser"& Chr(RetourAlaLigne))
+			FERMER(f)
+		FINSI
+
+FIN PROCEDURE
+
+PROCEDURE Afficher_Fichier(f:texte) //Affiche le fichier voulu
+
+VAR ChaineFichier:chaine
+
+DEBUT
+
+	OUVRIR(f)
+
+	TANT QUE NON Eof FAIRE //Tant que le pointeur n'est pas à la fin du fichier, on lit les lignes du fichier 'f' que l'on affecte à  la variable 'ChaineFichier'
+		LIRE(f,ChaineFichier)
+		ECRIRE(Chr(RetourAlaLigne)&ChaineFichier)
+	FIN TANTQUE
+
+	FERMER(f)
+	
+
+FIN PROCEDURE
+
+PROCEDURE Groupe_Verbe(f:Texte;g:Texte) //Procedure permettant de dire de quel groupe fait 
+partie les verbes dans le fichier.
+
+VAR 
+	1er,2eme,3eme:booleen
+	TestVerbe:chaine
+	Verbe:chaine
+	Verbe2:chaine
+	Long:entier
+
+DEBUT
+
+	OUVRIR(f)
+	OUVRIR(g)
+
+	TANT QUE NON Eof(f) FAIRE
+		1er<-FAUX
+		2eme<-FAUX
+		3eme<-FAUX
+		LIRE(f,Verbe)
+		ECRIRE(Verbe)
+		Long<-longueur(Verbe)
+		TestVerbe<-Extraction(Verbe,Long-1,2)
+
+		SI TestVerbe="er" ET Verbe<>"aller" ALORS //Vérification si verbe du 1er groupe
+			1er<-VRAI
+			ECRIRE("1er Groupe")
+		FINSI
+	
+		TANT QUE NON Eof(g) FAIRE
+			LIRE(g,Verbe2)
+			SI TestVerbe="ir" ET Verbe=Verbe2 ALORS //Vérification si verbe du 2eme groupe
+				2eme<-VRAI
+				ECRIRE("2ème Groupe")
+			FINSI
+		FIN TANTQUE
+				
+		SI 1er=FAUX ET 2eme=FAUX ALORS
+			3eme<-VRAI
+			ECRIRE("3ème Groupe")		
+
+	FIN TANTQUE
+
+FIN PROCEDURE
+
+PROCEDURE Conjugaison(f2:Texte;Verbe:chaine;g:Texte)
+
+VAR
+	TestVerbe, Je, Tu, Il, Nous, Vous, Ils,Voy,car2:chaine
+	cer, ger, Voyelle,apos: booleen
+
+DEBUT
+		1er<-FAUX
+		2eme<-FAUX
+		3eme<-FAUX
+
+		SI NON FichierExiste (f2) ALORS
+			REECRIRE(f2)
+		SINON
+			AJOUTER(f2)
+		FINSI
+
+		Long<-longueur(Verbe)
+		TestVerbe<-Extraction(Verbe,Long-1,2)
+
+		SI TestVerbe="er" ET Verbe<>"aller" ALORS
+			1er<-VRAI
+			car2<-EXTRACTION(Verbe,1,2)
+			Voy<-Extraction(Verbe,1,1)
+			apos<-(car2)="'")
+			Voyelle<-(Voy="a") OU (Voy="e") OU (Voy="i") OU (Voy="o") OU (Voy="u")
+			ger<-EXTRACTION(Verbe,Long-2,3)="ger"
+			cer<-EXTRACTION(Verbe,Long-2,3)="cer"
+			Je<-"Je " + EXTRACTION(Verbe,1,Long-1)
+			Tu<-"Tu " + EXTRACTION(Verbe,1,Long-1) + "s"
+			Il<-"Il " + EXTRACTION(Verbe,1,Long-1)
+			Nous<-"Nous " + EXTRACTION(Verbe,1,Long-2) + "ons"
+			Vous<-"Vous " + EXTRACTION(Verbe,1,Long-1) + "z"
+			Ils<-"Ils " + EXTRACTION(Verbe,1,Long-1) + "nt"
+
+			SI Voyelle ALORS
+				Je<-"J'" + EXTRACTION(Verbe,1,Long-1)
+			FINSI
+
+			//SI Voyelle ET apos ALORS //Condition à finir
+
+			SI ger ALORS
+				Nous<-"Nous " + EXTRACTION(Verbe,1,Long-1) + "ons"
+			FINSI
+
+			SI cer ALORS
+				Nous<-"Nous " + EXTRACTION(Verbe,1,Long-3) + "çons"
+			FINSI
+				
+			SI Verbe="aller" ALORS
+				Je<-"Je vais"
+				Tu<-"Tu vas"
+				Il<-"Il va"
+				Nous<-"Nous allons"
+				Vous<-"Vous allez"
+				Ils<-"Ils vont"
+			FINSI
+
+			ECRIRE(f2,Je)
+			ECRIRE(f2,Tu)
+			ECRIRE(f2,Il)
+			ECRIRE(f2,Nous)
+			ECRIRE(f2,Vous)
+			ECRIRE(f2,Ils)
+		FINSI
+
+		TANT QUE NON Eof(g) FAIRE
+			LIRE(g,Verbe2)
+			SI TestVerbe="ir" ET Verbe=Verbe2 ALORS //Vérification si verbe du 2eme groupe
+				2eme<-VRAI
+				Je<-"Je " + EXTRACTION(Verbe,1,Long-2) + "is"
+				Tu<-"Tu " + EXTRACTION(Verbe,1,Long-2) + "is"
+				Il<-"Il " + EXTRACTION(Verbe,1,Long-2) + "it"
+				Nous<-"Nous " + EXTRACTION(Verbe,1,Long-2) + "issons"
+				Vous<-"Vous " + EXTRACTION(Verbe,1,Long-2) + "issez"
+				Ils<-"Ils " + EXTRACTION(Verbe,1,Long-2) + "issent"
+
+				ECRIRE(f2,Je)
+				ECRIRE(f2,Tu)
+				ECRIRE(f2,Il)
+				ECRIRE(f2,Nous)
+				ECRIRE(f2,Vous)
+				ECRIRE(f2,Ils)
+
+			FINSI
+		FIN TANTQUE
+
+		SI 1er=FAUX ET 2eme=FAUX ALORS
+			3eme<-VRAI
+			SI Verbe="recevoir" ALORS
+                Je<-"Je reçois"
+                Tu<-"Tu reçois"
+                Il<-"Il reçoit"
+                Nous<-"Nous recevons"
+                Vous<-"Vous recevez"
+                Ils<-"Ils reçoivent"
+
+                ECRIRE(f2,Je)
+				ECRIRE(f2,Tu)
+				ECRIRE(f2,Il)
+				ECRIRE(f2,Nous)
+				ECRIRE(f2,Vous)
+				ECRIRE(f2,Ils)        
+        	SINON SI Verbe="bouillir" ALORS
+	                Je<-"Je bous"
+	                Tu<-"Tu bous"
+	                Il<-"Il bout"
+	                Nous<-"Nous bouillons"
+	                Vous<-"Vous bouillez"
+	                Ils<-"Ils bouillent"
+
+	                ECRIRE(f2,Je)
+					ECRIRE(f2,Tu)
+					ECRIRE(f2,Il)
+					ECRIRE(f2,Nous)
+					ECRIRE(f2,Vous)
+					ECRIRE(f2,Ils)
+				FINSI
+			FINSI
+		FINSI
+			//Je devais mettre ici les autres exceptions  
+
+		FEMER(f2)
+		FERMER(g)
+             
+
+FIN PROCEDURE
+
+//Programme principal
+
+VAR f:Texte //Fichier contenant les verbes voulus
+	f2:Texte //Fichier contenant les conjugaisons au présent de l'indicatif des verbes voulus
+	g:Texte //Fichier des verbes du 2eme groupe
+	Verbe:chaine
+	Groupe:chaine
+
+DEBUT
+	ASSIGNER(g,"fichier_verbes2emegroupe.txt")
+	ASSIGNER(f,"fichier_verbes.txt")
+	ASSIGNER(f2,"fichier_verbes_conj.txt")
+	CreationFichier(f)
+	Afficher_Fichier(f)
+	Groupe_Verbe(f,g)
+	ECRIRE("Veuillez saisir le verbe voulu dans la liste ci-dessus pour le conjuguer au présent de l'indicatif")
+	LIRE(Verbe)
+	Conjugaison(f2,Verbe,g)
+FIN
+
+
+
+
+
+
+
+	
+
